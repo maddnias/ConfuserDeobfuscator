@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7FC0621C-4190-4841-9888-6ACD20E0855A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ConfuserDeobfuscator</RootNamespace>
+    <AssemblyName>ConfuserDeobfuscator</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Deobfuscator.cs" />
+    <Compile Include="Engine\Base\DemutatedKeys.cs" />
+    <Compile Include="Engine\Base\IConstantDemutator.cs" />
+    <Compile Include="Engine\Base\IDelegateResolver.cs" />
+    <Compile Include="Engine\Base\IFileRewriter.cs" />
+    <Compile Include="Engine\Base\IMetadataCleaner.cs" />
+    <Compile Include="Engine\Pipeline.cs" />
+    <Compile Include="Engine\Routines\1.9\AntiDebugRemover.cs" />
+    <Compile Include="Engine\Base\DeobfuscationRoutine.cs" />
+    <Compile Include="Engine\Base\IDeobfuscationRoutine.cs" />
+    <Compile Include="Engine\DeobfuscatorContext.cs" />
+    <Compile Include="Engine\Routines\1.9\AntiDumpRemover.cs" />
+    <Compile Include="Engine\Routines\1.9\AntiTamperRemover.cs" />
+    <Compile Include="Engine\Routines\1.9\CtorProxyRemover.cs" />
+    <Compile Include="Engine\Routines\1.9\InvalidMetadataRemover.cs" />
+    <Compile Include="Engine\Routines\1.9\MethodDecryptor.cs" />
+    <Compile Include="Engine\Routines\1.9\ConstantsDecryption.cs" />
+    <Compile Include="Engine\Routines\1.9\MtdProxyRemover.cs" />
+    <Compile Include="Engine\Routines\1.9\ResourceDecryptor.cs" />
+    <Compile Include="Engine\Routines\1.9\Unpacker.cs" />
+    <Compile Include="Engine\Routines\Generic\AntiIldasmRemover.cs" />
+    <Compile Include="Engine\Routines\Generic\WatermarkRemover.cs" />
+    <Compile Include="Engine\Routines\Generic\MethodCleaner.cs" />
+    <Compile Include="IUserInterfaceProvider.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\Compression\Common\CRC.cs" />
+    <Compile Include="Utils\Compression\Common\InBuffer.cs" />
+    <Compile Include="Utils\Compression\Common\OutBuffer.cs" />
+    <Compile Include="Utils\Compression\ICoder.cs" />
+    <Compile Include="Utils\Compression\LZMA\Lzma.cs" />
+    <Compile Include="Utils\Compression\LZMA\LzmaBase.cs" />
+    <Compile Include="Utils\Compression\LZMA\LzmaDecoder.cs" />
+    <Compile Include="Utils\Compression\LZMA\LzmaEncoder.cs" />
+    <Compile Include="Utils\Compression\LZ\IMatchFinder.cs" />
+    <Compile Include="Utils\Compression\LZ\LzBinTree.cs" />
+    <Compile Include="Utils\Compression\LZ\LzInWindow.cs" />
+    <Compile Include="Utils\Compression\LZ\LzOutWindow.cs" />
+    <Compile Include="Utils\Compression\RangeCoder\RangeCoder.cs" />
+    <Compile Include="Utils\Compression\RangeCoder\RangeCoderBit.cs" />
+    <Compile Include="Utils\Compression\RangeCoder\RangeCoderBitTree.cs" />
+    <Compile Include="Utils\Extensions\AssemblyDefExt.cs" />
+    <Compile Include="Utils\Extensions\CilBodyExt.cs" />
+    <Compile Include="Utils\Extensions\FieldDefExt.cs" />
+    <Compile Include="Utils\Extensions\InstructionExt.cs" />
+    <Compile Include="Utils\Extensions\InstructionListExt.cs" />
+    <Compile Include="Utils\Extensions\MethodDefExt.cs" />
+    <Compile Include="Utils\Extensions\MiscExt.cs" />
+    <Compile Include="Utils\Extensions\TypeDefExt.cs" />
+    <Compile Include="Utils\ILEmulator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Defuser\de4dot\blocks\blocks.csproj">
+      <Project>{045b96f2-af80-4c4c-8d27-e38635ac705e}</Project>
+      <Name>blocks</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\de4dot\de4dot.code\de4dot.code.csproj">
+      <Project>{4d10b9eb-3bf1-4d61-a389-cb019e8c9622}</Project>
+      <Name>de4dot.code</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\de4dot\de4dot.cui\de4dot.cui.csproj">
+      <Project>{879e4a7e-c320-42d2-8275-4f1e44ce64aa}</Project>
+      <Name>de4dot.cui</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\de4dot\de4dot.mdecrypt\de4dot.mdecrypt.csproj">
+      <Project>{5c93c5e2-196f-4877-bf65-96febfcefca1}</Project>
+      <Name>de4dot.mdecrypt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\dnlib\src\dnlib.csproj">
+      <Project>{fdfc1237-143f-4919-8318-4926901f4639}</Project>
+      <Name>dnlib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
