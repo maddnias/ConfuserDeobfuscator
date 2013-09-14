@@ -21,7 +21,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\Debug\bin\</OutputPath>
+    <OutputPath>obj\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -44,7 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\blocks\blocks.csproj">
-      <Project>{045B96F2-AF80-4C4C-8D27-E38635AC705E}</Project>
+      <Project>{045b96f2-af80-4c4c-8d27-e38635ac705e}</Project>
       <Name>blocks</Name>
     </ProjectReference>
     <ProjectReference Include="..\de4dot.code\de4dot.code.csproj">

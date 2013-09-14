@@ -44,7 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\de4dot.cui\de4dot.cui.csproj">
-      <Project>{879E4A7E-C320-42D2-8275-4F1E44CE64AA}</Project>
+      <Project>{879e4a7e-c320-42d2-8275-4f1e44ce64aa}</Project>
       <Name>de4dot.cui</Name>
     </ProjectReference>
   </ItemGroup>

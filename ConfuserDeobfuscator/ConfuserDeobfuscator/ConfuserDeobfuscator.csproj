@@ -90,10 +90,6 @@
     <Compile Include="Utils\ILEmulator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Defuser\de4dot\blocks\blocks.csproj">
-      <Project>{045b96f2-af80-4c4c-8d27-e38635ac705e}</Project>
-      <Name>blocks</Name>
-    </ProjectReference>
     <ProjectReference Include="..\de4dot\de4dot.code\de4dot.code.csproj">
       <Project>{4d10b9eb-3bf1-4d61-a389-cb019e8c9622}</Project>
       <Name>de4dot.code</Name>
