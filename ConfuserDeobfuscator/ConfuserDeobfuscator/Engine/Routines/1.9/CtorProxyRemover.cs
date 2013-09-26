@@ -9,13 +9,13 @@ using Ctx = ConfuserDeobfuscator.Engine.DeobfuscatorContext;
 
 namespace ConfuserDeobfuscator.Engine.Routines._1._9
 {
-    public class CtorProxyRemover : DeobfuscationRoutine, IMetadataWorker
+    public class CtorProxyRemover : DeobfuscationRoutine19R, IMetadataWorker
     {
         public ModuleDefMD ModMD { get; set; }
 
         public override string Title
         {
-            get { return "Resolving constructor proxies..."; }
+            get { return "Resolving constructor proxies"; }
         }
 
         public override bool Detect()
@@ -39,7 +39,7 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
 
             if (proxies.Count == 0)
             {
-                Ctx.UIProvider.Write("No method proxies?");
+                Ctx.UIProvider.WriteVerbose("No method proxies?");
                 return false;
             }
             RoutineVariables.Add("proxies", proxies);
@@ -83,12 +83,12 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
             if (proxies != null)
                 foreach (var proxy in proxies)
                 {
-                    Ctx.UIProvider.WriteVerbose("Removed constructor proxy: {0}", 2, proxy.Name);
+                    Ctx.UIProvider.WriteVerbose("Removed constructor proxy: {0}", 2, true, proxy.Name);
                     Ctx.Assembly.ManifestModule.Types.Remove(proxy);
                 }
             if (generator != null)
             {
-                Ctx.UIProvider.WriteVerbose("Removed constructor proxy generator {0}::{1}", 2, generator.DeclaringType.Name,
+                Ctx.UIProvider.WriteVerbose("Removed constructor proxy generator {0}::{1}", 2, true, generator.DeclaringType.Name,
                                             generator.Name);
                 generator.DeclaringType.Methods.Remove(generator);
             }
@@ -100,7 +100,7 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
 
             foreach (var @ref in destCall.FindAllReferences())
             {
-                Ctx.UIProvider.WriteVerbose("Restored proxy call [{0} -> {1}]", 2, destCall.Name, resolvedProxy.Item2.Name);
+                Ctx.UIProvider.WriteVerbose("Restored proxy call [{0} -> {1}]", 2, true, destCall.Name, resolvedProxy.Item2.Name);
                 @ref.Item2.Body.SimplifyMacros(@ref.Item2.Parameters);
                 @ref.Item2.Body.SimplifyBranches();
                 @ref.Item2.Body.Instructions.Replace(@ref.Item1,

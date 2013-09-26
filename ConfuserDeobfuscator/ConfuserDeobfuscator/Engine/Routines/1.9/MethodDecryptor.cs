@@ -14,7 +14,7 @@ using Ctx = ConfuserDeobfuscator.Engine.DeobfuscatorContext;
 
 namespace ConfuserDeobfuscator.Engine.Routines._1._9
 {
-    public class MethodDecryptor : DeobfuscationRoutine, IMetadataWorker, IFileRewriter
+    public class MethodDecryptor : DeobfuscationRoutine19R, IMetadataWorker, IFileRewriter
     {
         public ModuleDefMD ModMD { get; set; }
 
@@ -22,7 +22,7 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
 
         public override string Title
         {
-            get { return "Decrypting and restoring methods..."; }
+            get { return "Decrypting and restoring methods"; }
         }
 
         public override bool Detect()
@@ -33,7 +33,7 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
 
             if (antiTamper == null || decryptor == null)
             {
-                Ctx.UIProvider.Write("No anti-tamper?");
+                Ctx.UIProvider.WriteVerbose("No anti-tamper?");
                 return false;
             }
 
@@ -118,7 +118,7 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
                     var offset = ModMD.MetaData.PEImage.ToFileOffset((RVA)rva);
                     var cDat = reader.ReadBytes(reader.ReadInt32());
 
-                    Ctx.UIProvider.WriteVerbose("Restored body with RVA 0x{0:X4} to 0x{1:X4}", 2, rva, (uint)offset);
+                    Ctx.UIProvider.WriteVerbose("Restored body with RVA 0x{0:X4} to 0x{1:X4}", 2, true, rva, (uint)offset);
 
                     fileStream.Position = (long)offset;
                     fileStream.Write(cDat, 0, cDat.Length);

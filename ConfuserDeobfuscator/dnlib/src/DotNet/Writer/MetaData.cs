@@ -256,7 +256,7 @@ namespace dnlib.DotNet.Writer {
 		internal MethodBodyChunks methodBodies;
 		internal NetResources netResources;
 		internal MetaDataHeader metaDataHeader;
-		public TablesHeap tablesHeap;
+        internal TablesHeap tablesHeap;
 		internal StringsHeap stringsHeap;
 		internal USHeap usHeap;
 		internal GuidHeap guidHeap;

@@ -39,7 +39,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Deobfuscator.cs" />
+    <Compile Include="ConsoleProvider.cs" />
+    <Compile Include="Deobfuscators\Base\DeobfuscatorBase.cs" />
+    <Compile Include="Deobfuscators\Deobfuscator19R.cs" />
     <Compile Include="Engine\Base\DemutatedKeys.cs" />
     <Compile Include="Engine\Base\IConstantDemutator.cs" />
     <Compile Include="Engine\Base\IDelegateResolver.cs" />
@@ -47,7 +49,7 @@
     <Compile Include="Engine\Base\IMetadataCleaner.cs" />
     <Compile Include="Engine\Pipeline.cs" />
     <Compile Include="Engine\Routines\1.9\AntiDebugRemover.cs" />
-    <Compile Include="Engine\Base\DeobfuscationRoutine.cs" />
+    <Compile Include="Engine\Base\DeobfuscationRoutine19R.cs" />
     <Compile Include="Engine\Base\IDeobfuscationRoutine.cs" />
     <Compile Include="Engine\DeobfuscatorContext.cs" />
     <Compile Include="Engine\Routines\1.9\AntiDumpRemover.cs" />

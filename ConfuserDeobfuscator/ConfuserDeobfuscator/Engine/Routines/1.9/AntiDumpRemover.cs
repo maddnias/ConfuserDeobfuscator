@@ -9,11 +9,11 @@ using Ctx = ConfuserDeobfuscator.Engine.DeobfuscatorContext;
 
 namespace ConfuserDeobfuscator.Engine.Routines._1._9
 {
-    class AntiDumpRemover : DeobfuscationRoutine
+    class AntiDumpRemover : DeobfuscationRoutine19R
     {
         public override string Title
         {
-            get { return "Removing anti-dump module..."; }
+            get { return "Removing anti-dump module"; }
         }
 
         public override bool Detect()
@@ -22,7 +22,7 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
 
             if (antiDump == null)
             {
-                Ctx.UIProvider.Write("No anti-dump?");
+                Ctx.UIProvider.WriteVerbose("No anti-dump?");
                 return false;
             }
             RoutineVariables.Add("antidump", antiDump);
@@ -30,7 +30,7 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
 
             if (refs.Count != 1)
             {
-                Ctx.UIProvider.Write("Too many or too few calls to anti-debug module");
+                Ctx.UIProvider.WriteVerbose("Too many or too few calls to anti-debug module");
                 return false;
             }
             RoutineVariables.Add("badcall", refs[0]);
@@ -55,13 +55,13 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
 
             if (antiDump != null)
             {
-                Ctx.UIProvider.WriteVerbose("Removed bad type {0}", 2, antiDump.DeclaringType.Name);
+                Ctx.UIProvider.WriteVerbose("Removed bad type {0}", 2, true, antiDump.DeclaringType.Name);
                 Ctx.Assembly.ManifestModule.Types.Remove(antiDump.DeclaringType);
             }
 
             if (badCall != null)
             {
-                Ctx.UIProvider.WriteVerbose("Removed call to anti-dump module", 2, "");
+                Ctx.UIProvider.WriteVerbose("Removed call to anti-dump module", 2, true, "");
                 badCall.Item2.Body.Instructions.Remove(badCall.Item1);
             }
         }

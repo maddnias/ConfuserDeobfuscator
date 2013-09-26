@@ -10,11 +10,11 @@ using dnlib.DotNet.Writer;
 
 namespace ConfuserDeobfuscator.Engine.Routines.Generic
 {
-    class MethodCleaner : DeobfuscationRoutine
+    class MethodCleaner : DeobfuscationRoutine19R
     {
         public override string Title
         {
-            get { return "Cleaning methods via de4dot..."; }
+            get { return "Cleaning methods via de4dot"; }
         }
 
         public bool Rename { get; set; }
@@ -69,7 +69,7 @@ namespace ConfuserDeobfuscator.Engine.Routines.Generic
 
             using (var asm = new MemoryStream())
             {
-                DeobfuscatorContext.Assembly.Write(asm);
+                DeobfuscatorContext.Assembly.Write(asm, new ModuleWriterOptions() { Logger = DummyLogger.NoThrowInstance});
                 files.Add(new ObfuscatedFile(newFileOptions, filesOptions.ModuleContext,
                                              filesOptions.AssemblyClientFactory, asm));
 

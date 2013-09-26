@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ConfuserDeobfuscator;
+using ConfuserDeobfuscator.Deobfuscators;
 
 namespace ConfuserDeobfuscatorUI
 {
@@ -11,7 +12,7 @@ namespace ConfuserDeobfuscatorUI
     {
         static void Main(string[] args)
         {
-            var d = new Deobfuscator();
+            var d = new Deobfuscator19R();
             d.ProcessFile(args[0]);
 
             Console.ReadLine();

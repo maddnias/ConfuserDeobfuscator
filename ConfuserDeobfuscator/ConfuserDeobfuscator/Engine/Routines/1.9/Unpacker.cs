@@ -3,34 +3,37 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using ConfuserDeobfuscator.Engine.Base;
+using ConfuserDeobfuscator.Engine.Routines.Generic;
+using ConfuserDeobfuscator.Utils;
 using ConfuserDeobfuscator.Utils.Extensions;
 using Defuser.Utilities.Compression.LZMA;
 using dnlib.DotNet;
+using dnlib.DotNet.Emit;
 using Ctx = ConfuserDeobfuscator.Engine.DeobfuscatorContext;
 
 namespace ConfuserDeobfuscator.Engine.Routines._1._9
 {
-    class Unpacker : DeobfuscationRoutine, IMetadataWorker, IFileRewriter
+    class Unpacker : DeobfuscationRoutine19R, IMetadataWorker, IFileRewriter
     {
         public ModuleDefMD ModMD { get; set; }
 
         public override string Title
         {
-            get { return ""; }
+            get { return "Unpacking assembly"; }
         }
 
         public override bool Detect()
         {
             if (ModMD.TablesStream.FileTable.Rows == 0)
             {
-                Ctx.UIProvider.Write("No packer?");
+                Ctx.UIProvider.WriteVerbose("No packer?");
                 return false;
             }
 
             var fileRow = ModMD.TablesStream.ReadFileRow(1);
             if (ModMD.StringsStream.ReadNoNull(fileRow.Name) != "___.netmodule")
             {
-                Ctx.UIProvider.Write("No packer?");
+                Ctx.UIProvider.WriteVerbose("No packer?");
                 return false;
             }
 
@@ -44,12 +47,17 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
 
         public override void Process()
         {
-            var res = Ctx.Assembly.ManifestModule.Resources.First(x => x.IsPrivate);
+            var origAsm = Ctx.Assembly;
+            UnpackAllAssemblies(origAsm);
+            Ctx.Assembly = origAsm;
+           
+            var mainRes = Ctx.Assembly.ManifestModule.Resources.FirstOrDefault(x => x.IsPrivate);
+            if (mainRes == null)
+                return;
             var decryptor = Ctx.Assembly.ManifestModule.EntryPoint.DeclaringType.FindMethod("Decrypt");
 
-            CalculateMutations(decryptor);
-            var key = decryptor.Body.Instructions.FindInstruction(x => x.IsLdcI4(), 0).GetLdcI4Value();
-            var asmDat = Decrypt((res as EmbeddedResource).GetResourceData(), key);
+            var key = RetrieveDecryptionKey(decryptor);
+            var asmDat = Decrypt((mainRes as EmbeddedResource).GetResourceData(), key);
             var mod = ModuleDefMD.Load(asmDat);
 
             mod.Name = Ctx.Assembly.ManifestModule.Name;
@@ -57,11 +65,11 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
             mod.Assembly = Ctx.Assembly;
 
             Ctx.Assembly.Modules[0] = mod;
+            Ctx.UIProvider.WriteVerbose("Unpacked: {0}", 2, true, Ctx.Assembly.Name + Ctx.Assembly.GetExtension());
         }
 
         public override void CleanUp()
         {
-            
         }
 
         static byte[] Decrypt(byte[] asm, int key0I)
@@ -110,12 +118,65 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
             }
         }
 
+        void UnpackAllAssemblies(AssemblyDef asm)
+        {
+            foreach (var res in asm.ManifestModule.Resources)
+            {
+                if (!(res is EmbeddedResource))
+                    continue;
+                if (!res.IsPrivate)
+                    continue;
+                var _res = res as EmbeddedResource;
+                byte[] decAsm;
+                if (StaticDecryptAssembly(asm, _res.GetResourceData(), out decAsm))
+                {
+                    try
+                    {
+                        var tmpAsm = Ctx.Deobfuscator.DeobfuscateAssembly(AssemblyDef.Load(decAsm));
+                        tmpAsm.Write(Path.GetDirectoryName(Ctx.Filename) + "\\" + tmpAsm.Name + tmpAsm.GetExtension());
+
+                        Ctx.UIProvider.WriteVerbose("Unpacked: {0}", 2, true, tmpAsm.Name + tmpAsm.GetExtension());
+
+                        var tester = new Unpacker();
+                        Ctx.Assembly = tmpAsm;
+                        tester.Initialize();
+                        if (tester.Detect())
+                            UnpackAllAssemblies(tmpAsm);
+                    }
+                    catch (BadImageFormatException e)
+                    {
+
+                    }
+                }
+            }
+        }
+
+        bool StaticDecryptAssembly(AssemblyDef asmDef, byte[] asm, out byte[] decData)
+        {
+            var decryptor = asmDef.ManifestModule.EntryPoint.DeclaringType.FindMethod("Decrypt");
+            var key = RetrieveDecryptionKey(decryptor);
+            decData = new byte[asm.Length];
+
+            try
+            {
+                decData = Decrypt(asm, key);
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        int RetrieveDecryptionKey(MethodDef decryptor)
+        {
+            CalculateMutations(decryptor);
+            return decryptor.Body.Instructions.FindInstruction(x => x.IsLdcI4(), 0).GetLdcI4Value();
+        }
+
         public void ReloadFile()
         {
-            using (var ms = new MemoryStream())
-            {
-                // Ctx.Filename = Ctx.Filename + "_unpacked.exe";
-            }
         }
     }
 }

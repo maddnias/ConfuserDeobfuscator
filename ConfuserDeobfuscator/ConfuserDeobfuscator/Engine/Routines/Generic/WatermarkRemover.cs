@@ -4,11 +4,11 @@ using dnlib.DotNet;
 
 namespace ConfuserDeobfuscator.Engine.Routines.Generic
 {
-    public class WatermarkRemover : DeobfuscationRoutine
+    public class WatermarkRemover : DeobfuscationRoutine19R
     {
         public override string Title
         {
-            get { return "Removing confuser watermark..."; }
+            get { return "Removing confuser watermark"; }
         }
 
         public override bool Detect()
@@ -54,11 +54,11 @@ namespace ConfuserDeobfuscator.Engine.Routines.Generic
 
             if (mod == null) return;
             mod.CustomAttributes.Remove(attrib);
-            DeobfuscatorContext.UIProvider.WriteVerbose("Removed ConfusedByAttribute from {0}", 2, mod.Name);
+            DeobfuscatorContext.UIProvider.WriteVerbose("Removed ConfusedByAttribute from {0}", 2, true, mod.Name);
 
             if (attrib == null) return;
             attrib.AttributeType.Module.Types.Remove(attrib.AttributeType.ResolveTypeDef());
-            DeobfuscatorContext.UIProvider.WriteVerbose("Removed type {0}", 2, attrib.AttributeType.Name.String);
+            DeobfuscatorContext.UIProvider.WriteVerbose("Removed type {0}", 2, true, attrib.AttributeType.Name.String);
         }
     }
 }

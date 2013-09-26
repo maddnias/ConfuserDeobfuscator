@@ -83,6 +83,7 @@ namespace de4dot.code {
 		}
 
 		public void Log(object sender, LoggerEvent loggerEvent, string format, params object[] args) {
+            return;
 			Log(true, sender, loggerEvent, format, args);
 		}
 
@@ -91,7 +92,7 @@ namespace de4dot.code {
 		}
 
 		public void Log(bool canIgnore, object sender, LoggerEvent loggerEvent, string format, params object[] args) {
-            return;
+      
 			if (IgnoresEvent(loggerEvent))
 				return;
 			if (canIgnore && ignoreMessage(loggerEvent, format, args))

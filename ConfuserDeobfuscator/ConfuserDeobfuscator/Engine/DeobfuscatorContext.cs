@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using ConfuserDeobfuscator.Deobfuscators;
+using ConfuserDeobfuscator.Deobfuscators.Base;
 using dnlib.DotNet;
 
 namespace ConfuserDeobfuscator.Engine
@@ -7,10 +9,12 @@ namespace ConfuserDeobfuscator.Engine
     {
         public enum OutputLevel
         {
-            Normal = 0,
-            Verbose = 1
+            None = 0,
+            Normal = 1,
+            Verbose = 2
         }
 
+        public static DeobfuscatorBase Deobfuscator { get; set; }
         public static IUserInterfaceProvider UIProvider { get; set; }
         public static AssemblyDef Assembly { get; set; }
         public static string Filename { get; set; }

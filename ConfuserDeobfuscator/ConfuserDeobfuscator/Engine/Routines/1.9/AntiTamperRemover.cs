@@ -7,11 +7,11 @@ using Ctx = ConfuserDeobfuscator.Engine.DeobfuscatorContext;
 
 namespace ConfuserDeobfuscator.Engine.Routines._1._9
 {
-    public class AntiTamperRemover : DeobfuscationRoutine
+    public class AntiTamperRemover : DeobfuscationRoutine19R
     {
         public override string Title
         {
-            get { return "Removing anti-tamper module..."; }
+            get { return "Removing anti-tamper module"; }
         }
 
         public override bool Detect()
@@ -44,15 +44,15 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
 
             if (refs.Count != 1)
             {
-                Ctx.UIProvider.Write("Too many or too few references to anti-tamper module...");
+                Ctx.UIProvider.Write("Too many or too few references to anti-tamper module");
                 return;
             }
 
-            Ctx.UIProvider.WriteVerbose("Removed call to anti-tamper from {0}::{1}", 2, refs[0].Item2.DeclaringType.Name,
+            Ctx.UIProvider.WriteVerbose("Removed call to anti-tamper from {0}::{1}", 2, true, refs[0].Item2.DeclaringType.Name,
                                         ".cctor");
             refs[0].Item2.Body.Instructions.Remove(refs[0].Item1);
 
-            Ctx.UIProvider.WriteVerbose("Removed bad type: {0}", 2, antiTamper.DeclaringType.Name);
+            Ctx.UIProvider.WriteVerbose("Removed bad type: {0}", 2, true, antiTamper.DeclaringType.Name);
             Ctx.Assembly.ManifestModule.Types.Remove(antiTamper.DeclaringType);
         }
 

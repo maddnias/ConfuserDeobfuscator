@@ -8,13 +8,13 @@ using dnlib.DotNet.Emit;
 
 namespace ConfuserDeobfuscator.Engine.Base
 {
-    public abstract class DeobfuscationRoutine : IDeobfuscationRoutine, IConstantDemutator, IDelegateResolver
+    public abstract class DeobfuscationRoutine19R : IDeobfuscationRoutine, IConstantDemutator, IDelegateResolver
     {
         public Dictionary<string, object> RoutineVariables { get; set; }
         public Dictionary<string, DemutatedKeys> DemutatedKeys { get; set;}
         public abstract string Title { get; }
 
-        protected DeobfuscationRoutine()
+        protected DeobfuscationRoutine19R()
         {
             RoutineVariables = new Dictionary<string, object>();
             DemutatedKeys = new Dictionary<string, DemutatedKeys>();

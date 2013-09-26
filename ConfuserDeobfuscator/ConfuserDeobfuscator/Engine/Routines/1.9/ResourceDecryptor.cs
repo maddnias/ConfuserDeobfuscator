@@ -12,7 +12,7 @@ using Ctx = ConfuserDeobfuscator.Engine.DeobfuscatorContext;
 
 namespace ConfuserDeobfuscator.Engine.Routines._1._9
 {
-    class ResourceDecryptor : DeobfuscationRoutine
+    class ResourceDecryptor : DeobfuscationRoutine19R
     {
         public override string Title
         {
@@ -83,7 +83,7 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
                 if (res != null)
                 {
                     Ctx.Assembly.ManifestModule.Resources.Add(res);
-                    Ctx.UIProvider.WriteVerbose("Restored resource: {0}", 2, res.Name);
+                    Ctx.UIProvider.WriteVerbose("Restored resource: {0}", 2, true, res.Name);
                 }
         }
 
@@ -102,19 +102,19 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
 
             if (badRes != null)
             {
-                Ctx.UIProvider.WriteVerbose("Removed encrypted resource: {0}", 2, badRes.Name);
+                Ctx.UIProvider.WriteVerbose("Removed encrypted resource: {0}", 2, true, badRes.Name);
                 Ctx.Assembly.ManifestModule.Resources.Remove(badRes);
             }
 
             if (resolver != null)
             {
-                Ctx.UIProvider.WriteVerbose("Removed resource decryptor: {0}::{1}", 2, resolver.DeclaringType.Name, resolver.Name);
+                Ctx.UIProvider.WriteVerbose("Removed resource decryptor: {0}::{1}", 2, true, resolver.DeclaringType.Name, resolver.Name);
                 resolver.DeclaringType.Methods.Remove(resolver);
             }
 
             if (asmFld != null)
             {
-                Ctx.UIProvider.WriteVerbose("Removed bad field: {0}::{1}", 2, asmFld.DeclaringType.Name, asmFld.Name);
+                Ctx.UIProvider.WriteVerbose("Removed bad field: {0}::{1}", 2, true, asmFld.DeclaringType.Name, asmFld.Name);
                 asmFld.DeclaringType.Fields.Remove(asmFld);
             }
         }

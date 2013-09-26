@@ -5,11 +5,11 @@ using Ctx = ConfuserDeobfuscator.Engine.DeobfuscatorContext;
 
 namespace ConfuserDeobfuscator.Engine.Routines.Generic
 {
-    class AntiIldasmRemover : DeobfuscationRoutine
+    class AntiIldasmRemover : DeobfuscationRoutine19R
     {
         public override string Title
         {
-            get { return "Removing anti-ildasm attribute..."; }
+            get { return "Removing anti-ildasm attribute"; }
         }
 
         public override bool Detect()
@@ -50,7 +50,7 @@ namespace ConfuserDeobfuscator.Engine.Routines.Generic
 
             if (mod != null && badAttrib != null)
             {
-                Ctx.UIProvider.WriteVerbose("Removed anti-ildasm attribute from manifest module", 2, "");
+                Ctx.UIProvider.WriteVerbose("Removed anti-ildasm attribute from manifest module", 2, true, "");
                 mod.CustomAttributes.Remove(badAttrib);
             }
         }

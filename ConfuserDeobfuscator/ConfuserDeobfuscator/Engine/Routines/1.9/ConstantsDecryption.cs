@@ -14,11 +14,11 @@ using Ctx = ConfuserDeobfuscator.Engine.DeobfuscatorContext;
 
 namespace ConfuserDeobfuscator.Engine.Routines._1._9
 {
-    public class ConstantsDecryption : DeobfuscationRoutine
+    public class ConstantsDecryption : DeobfuscationRoutine19R
     {
         public override string Title
         {
-            get { return "Decrypting and restoring constants..."; }
+            get { return "Decrypting and restoring constants"; }
         }
 
 
@@ -187,7 +187,7 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
                 body.Item1.Insert(0, body.Item1[0].Previous(body.Item2));
                 foreach (var instr in body.Item1)
                     cctor.Body.Instructions.Remove(instr);
-                Ctx.UIProvider.WriteVerbose("Removed resource decryptor from {0}::{1}", 2, cctor.DeclaringType.Name,
+                Ctx.UIProvider.WriteVerbose("Removed resource decryptor from {0}::{1}", 2, true, cctor.DeclaringType.Name,
                                             cctor.Name);
             }
 
@@ -195,28 +195,28 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
             {
                 foreach (var dec in decryptors)
                 {
-                    Ctx.UIProvider.WriteVerbose("Removed constants decryptor type: {0}", 2, dec.DeclaringType.Name); 
+                    Ctx.UIProvider.WriteVerbose("Removed constants decryptor type: {0}", 2, true, dec.DeclaringType.Name); 
                     Ctx.Assembly.ManifestModule.Types.Remove(dec.DeclaringType);
                 }
             }
 
             if (constTbl != null)
             {
-                Ctx.UIProvider.WriteVerbose("Removed constTbl field from {0}::{1}", 2, constTbl.DeclaringType.Name,
+                Ctx.UIProvider.WriteVerbose("Removed constTbl field from {0}::{1}", 2, true, constTbl.DeclaringType.Name,
                                             constTbl.Name);
                 constTbl.DeclaringType.Fields.Remove(constTbl);
             }
 
             if (constBuffer != null)
             {
-                Ctx.UIProvider.WriteVerbose("Removed constBuffer field from {0}::{1}", 2, constBuffer.DeclaringType.Name,
+                Ctx.UIProvider.WriteVerbose("Removed constBuffer field from {0}::{1}", 2, true, constBuffer.DeclaringType.Name,
                                             constBuffer.Name);
                 constBuffer.DeclaringType.Fields.Remove(constBuffer);
             }
 
             if (res != null)
             {
-                Ctx.UIProvider.WriteVerbose("Removed bad resource: {0}", 2, res.Name);
+                Ctx.UIProvider.WriteVerbose("Removed bad resource: {0}", 2, true, res.Name);
                 Ctx.Assembly.ManifestModule.Resources.Remove(res);
             }
         }
@@ -258,50 +258,62 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
             resDec.Key0D = parsedBody.FindInstruction(x => x.IsCall() && x.Operand.ToString().EndsWith("MemberInfo::get_Module()"), 0).Next(cctor.Body).GetLdcI4Value();
             resDec.Token1 = cctor.MDToken.ToInt32();
 
-            var key = (Ctx.Assembly.ManifestModule as ModuleDefMD).ReadBlob((uint)(resDec.Key0D ^ resDec.Token1));
-            if (key.Length != 32) // Doesn't read same signature before and after anti-tamper
-                key = Ctx.OriginalMD.ReadBlob(resDec.Key0D.GetUInt() ^ Ctx.OriginalMD.ResolveMethod(1).MDToken.ToUInt32()); // .cctor should be at RID 1
+            var defMd = Ctx.Assembly.ManifestModule as ModuleDefMD;
+            if (defMd != null)
+            {
+                var key = defMd.ReadBlob((uint)(resDec.Key0D ^ resDec.Token1));
+                if (key.Length != 32) // Doesn't read same signature before and after anti-tamper
+                    key = Ctx.OriginalMD.ReadBlob(resDec.Key0D.GetUInt() ^ Ctx.OriginalMD.ResolveMethod(1).MDToken.ToUInt32()); // .cctor should be at RID 1
 
-            var resname = Encoding.UTF8.GetString(BitConverter.GetBytes(resDec.Key0I));
-            var res = Ctx.Assembly.ManifestModule.Resources.FirstOrDefault(x => Encoding.UTF8.GetBytes(x.Name).SequenceEqual(Encoding.UTF8.GetBytes(resname)));
-            if (res == null)
-                res = Ctx.Assembly.ManifestModule.Resources.First(x => x.Name.String == resname);
-            RoutineVariables.Add("badResource", res);
-            resDec.DecryptResource((res as EmbeddedResource).GetResourceStream(), key);
+                var resname = Encoding.UTF8.GetString(BitConverter.GetBytes(resDec.Key0I));
+                var res = Ctx.Assembly.ManifestModule.Resources.FirstOrDefault(x => Encoding.UTF8.GetBytes(x.Name).SequenceEqual(Encoding.UTF8.GetBytes(resname)));
+                if (res == null)
+                    res = Ctx.Assembly.ManifestModule.Resources.First(x => x.Name.String == resname);
+                RoutineVariables.Add("badResource", res);
+                var resource = res as EmbeddedResource;
+                if (resource != null)
+                    resDec.DecryptResource(resource.GetResourceStream(), key);
+            }
 
             demutatedDecryptors.ForEach(d => d.Item1.ConstBuffer = resDec.ConstBuffer);
         }
-        private void DecryptConstants(List<Tuple<Decryptor, MethodDef, List<Tuple<Instruction, MethodDef>>>> demutatedDecryptors)
+
+        private void DecryptConstants(
+            List<Tuple<Decryptor, MethodDef, List<Tuple<Instruction, MethodDef>>>> demutatedDecryptors)
         {
             demutatedDecryptors.ForEach(d =>
-                                            {
-                                                CalculateMutations(d.Item2);
-                                                PopulateKeys(d.Item1, d.Item2);
+            {
+                CalculateMutations(d.Item2);
+                PopulateKeys(d.Item1, d.Item2);
 
-                                                foreach (var @ref in d.Item3)
-                                                {
-                                                    //var tracer = new ILEmulator(@ref.Item2.Body,
-                                                    //                            @ref.Item2.Body.Instructions.Count);
-                                                    //var test = tracer.TraceCallParameters(@ref.Item1).ToList();
-                                                    var body = @ref.Item2.Body;
-                                                    var mdModifier =
-                                                        (uint) @ref.Item1.Previous(body).Previous(body).GetLdcI4Value();
-                                                    var hashModifier = (ulong) @ref.Item1.Previous(body).GetLdcI8();
-                                                    var str = d.Item1.Decrypt<string>(mdModifier, hashModifier);
+                foreach (var @ref in d.Item3)
+                {
+                    //var tracer = new ILEmulator(@ref.Item2.Body,
+                    //                            @ref.Item2.Body.Instructions.Count);
+                    //var test = tracer.TraceCallParameters(@ref.Item1).ToList();
+                    var body = @ref.Item2.Body;
+                    var mdModifier =
+                        (uint) @ref.Item1.Previous(body).Previous(body).GetLdcI4Value();
+                    var hashModifier = (ulong) @ref.Item1.Previous(body).GetLdcI8();
+                    var str = d.Item1.Decrypt<string>(mdModifier, hashModifier);
 
-                                                    body.Instructions.Remove(@ref.Item1.Previous(body).Previous(body));
-                                                    body.Instructions.Remove(@ref.Item1.Previous(body));
-                                                    body.Instructions.Insert(
-                                                        @ref.Item1.GetInstructionIndex(body.Instructions),
-                                                        Instruction.Create(OpCodes.Ldstr, str));
-                                                    body.Instructions.Remove(@ref.Item1);
+                    body.SimplifyMacros(@ref.Item2.Parameters);
+                    body.SimplifyBranches();
+                    body.Instructions.Insert(
+                        body.Instructions.IndexOf(@ref.Item1),
+                        Instruction.Create(OpCodes.Ldstr, str));
+                    body.Instructions.RemoveAt(body.Instructions.IndexOf(@ref.Item1) - 2);
+                    body.Instructions.RemoveAt(body.Instructions.IndexOf(@ref.Item1) - 1);
+                    body.Instructions.Remove(@ref.Item1);
+                    body.OptimizeMacros();
+                    body.OptimizeBranches();
 
-                                                    Ctx.UIProvider.WriteVerbose("Restored string \"{0}\"", 2, str);
-                                                }
-                                            });
+                    Ctx.UIProvider.WriteVerbose("Restored string \"{0}\"", 2, true, str);
+                }
+            });
         }
 
-        private void PopulateKeys(Decryptor decryptor, MethodDef method)
+        private static void PopulateKeys(Decryptor decryptor, MethodDef method)
         {
             decryptor.Token2 = method.DeclaringType.MDToken.ToInt32();
             decryptor.Token1 = method.MDToken.ToInt32();
@@ -315,7 +327,7 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
                       .Next(method.Body)
                       .GetLdcI4Value();
         }
-        private bool IsStringDecryptor(MethodDef mDef, bool all)
+        private static bool IsStringDecryptor(MethodDef mDef, bool all)
         {
             if (!mDef.HasBody)
                 return false;

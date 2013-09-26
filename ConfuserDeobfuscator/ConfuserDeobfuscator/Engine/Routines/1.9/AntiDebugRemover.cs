@@ -10,9 +10,9 @@ using Ctx = ConfuserDeobfuscator.Engine.DeobfuscatorContext;
 
 namespace ConfuserDeobfuscator.Engine
 {
-    public class AntiDebugRemover : DeobfuscationRoutine
+    public class AntiDebugRemover : DeobfuscationRoutine19R
     {
-        public override string Title { get { return "Removing anti-debug module..."; } }
+        public override string Title { get { return "Removing anti-debug module"; } }
 
 
         public override void Initialize()
@@ -26,7 +26,7 @@ namespace ConfuserDeobfuscator.Engine
 
             if (antiDebug == null || cctor == null)
             {
-                Ctx.UIProvider.Write("No anti-debug protection?");
+                Ctx.UIProvider.WriteVerbose("No anti-debug protection?");
                 return false;
             }
 
@@ -34,7 +34,7 @@ namespace ConfuserDeobfuscator.Engine
 
             if (refs.Count != 1)
             {
-                Ctx.UIProvider.Write("Too many or too few calls to anti-debug module");
+                Ctx.UIProvider.WriteVerbose("Too many or too few calls to anti-debug module");
                 return false;
             }
 
@@ -61,14 +61,14 @@ namespace ConfuserDeobfuscator.Engine
 
             if (badCall != null)
             {
-                Ctx.UIProvider.WriteVerbose("Removed bad call from {0}::{1}", 2, badCall.Item2.DeclaringType.Name,
+                Ctx.UIProvider.WriteVerbose("Removed bad call from {0}::{1}", 2, true, badCall.Item2.DeclaringType.Name,
                                             badCall.Item2.Name);
                 badCall.Item2.Body.Instructions.Remove(badCall.Item1);
             }
 
             if (badType != null)
             {
-                Ctx.UIProvider.WriteVerbose("Removed bad type {0}", 2, badType.Name);
+                Ctx.UIProvider.WriteVerbose("Removed bad type {0}", 2, true, badType.Name);
                 badType.Module.Types.Remove(badType);
             }
         }

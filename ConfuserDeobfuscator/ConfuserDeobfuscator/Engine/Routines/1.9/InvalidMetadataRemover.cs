@@ -6,13 +6,13 @@ using Ctx = ConfuserDeobfuscator.Engine.DeobfuscatorContext;
 
 namespace ConfuserDeobfuscator.Engine.Routines._1._9
 {
-    class InvalidMetadataRemover : DeobfuscationRoutine, IMetadataWorker
+    class InvalidMetadataRemover : DeobfuscationRoutine19R, IMetadataWorker
     {
         public ModuleDefMD ModMD { get; set; }
 
         public override string Title
         {
-            get { return "Removing invalid metadata..."; }
+            get { return "Removing invalid metadata"; }
         }
 
         public override bool Detect()
@@ -20,7 +20,7 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
             var initTypeName = ModMD.StringsStream.Read(ModMD.TablesStream.ReadTypeDefRow(1).Name);
             if (initTypeName.String.Length < 20 && initTypeName == "<Module>")
             {
-                Ctx.UIProvider.Write("No invalid metadata?");
+                Ctx.UIProvider.WriteVerbose("No invalid metadata?");
                 return false;
             }
 
@@ -56,7 +56,7 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
 
             if (mainType != null)
             {
-                Ctx.UIProvider.WriteVerbose("Updated type at RID 1 name to <Module>", 2, "");
+                Ctx.UIProvider.WriteVerbose("Updated type at RID 1 name to <Module>", 2, true, "");
                 Ctx.Assembly.ManifestModule.Types.First(x => x == mainType).Name = "<Module>";
             }
 

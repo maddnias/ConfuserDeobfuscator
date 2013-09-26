@@ -35,7 +35,6 @@ namespace de4dot.code {
         {
             this.filename = Utils.getFullPath(filename);
             this.moduleContext = moduleContext;
-            this.data = data;
         }
 
 		public AssemblyModule(string filename, ModuleContext moduleContext, MemoryStream data) {

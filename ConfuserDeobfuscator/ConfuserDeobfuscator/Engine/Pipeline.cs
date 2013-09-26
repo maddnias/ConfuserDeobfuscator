@@ -32,7 +32,7 @@ using ConfuserDeobfuscator.Engine.Base;
 
 namespace ConfuserDeobfuscator.Engine
 {
-    internal class Pipeline
+    public class Pipeline
     {
         private readonly ArrayList _steps;
 
@@ -41,17 +41,17 @@ namespace ConfuserDeobfuscator.Engine
             _steps = new ArrayList();
         }
 
-        public void PrependStep(DeobfuscationRoutine step)
+        public void PrependStep(IDeobfuscationRoutine step)
         {
             _steps.Insert(0, step);
         }
 
-        public void AppendStep(DeobfuscationRoutine step)
+        public void AppendStep(IDeobfuscationRoutine step)
         {
             _steps.Add(step);
         }
 
-        public void AddStepBefore(Type target, DeobfuscationRoutine step)
+        public void AddStepBefore(Type target, IDeobfuscationRoutine step)
         {
             for (int i = 0; i < _steps.Count; i++)
             {
@@ -65,13 +65,13 @@ namespace ConfuserDeobfuscator.Engine
             throw new InvalidOperationException(msg);
         }
 
-        public void ReplaceStep(Type target, DeobfuscationRoutine step)
+        public void ReplaceStep(Type target, IDeobfuscationRoutine step)
         {
             AddStepBefore(target, step);
             RemoveStep(target);
         }
 
-        public void AddStepAfter(Type target, DeobfuscationRoutine step)
+        public void AddStepAfter(Type target, IDeobfuscationRoutine step)
         {
             for (int i = 0; i < _steps.Count; i++)
             {
@@ -88,7 +88,7 @@ namespace ConfuserDeobfuscator.Engine
             throw new InvalidOperationException(msg);
         }
 
-        public void AddStepAfter(DeobfuscationRoutine target, DeobfuscationRoutine step)
+        public void AddStepAfter(IDeobfuscationRoutine target, IDeobfuscationRoutine step)
         {
             for (int i = 0; i < _steps.Count; i++)
             {
@@ -119,14 +119,14 @@ namespace ConfuserDeobfuscator.Engine
         {
             while (_steps.Count > 0)
             {
-                var step = (DeobfuscationRoutine)_steps[0];
-                DeobfuscatorContext.UIProvider.Write("\n" + step.Title);
+                var step = (IDeobfuscationRoutine)_steps[0];
                 step.Initialize();
 
                 if (step.Detect())
                 {
+                    DeobfuscatorContext.UIProvider.Write(step.Title, 2);
                     step.Process();
-                    DeobfuscatorContext.UIProvider.Write("\nCleaning up...");
+                    DeobfuscatorContext.UIProvider.WriteVerbose("\nCleaning up");
                     step.CleanUp();
                     if (step is IFileRewriter)
                         (step as IFileRewriter).ReloadFile();
@@ -135,14 +135,14 @@ namespace ConfuserDeobfuscator.Engine
             }
         }
 
-        public DeobfuscationRoutine[] GetSteps()
+        public IDeobfuscationRoutine[] GetSteps()
         {
-            return (DeobfuscationRoutine[]) _steps.ToArray(typeof (DeobfuscationRoutine));
+            return (IDeobfuscationRoutine[])_steps.ToArray(typeof(IDeobfuscationRoutine));
         }
 
         public bool ContainsStep(Type type)
         {
-            foreach (DeobfuscationRoutine step in _steps)
+            foreach (IDeobfuscationRoutine step in _steps)
                 if (step.GetType() == type)
                     return true;
 

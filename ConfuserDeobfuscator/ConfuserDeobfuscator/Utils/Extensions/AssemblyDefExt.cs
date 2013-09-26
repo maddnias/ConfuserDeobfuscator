@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using dnlib.DotNet;
 
@@ -22,6 +23,16 @@ namespace ConfuserDeobfuscator.Utils
                 foreach (var mDef in tDef.Methods.Where(mDef => pred(mDef)))
                     yield return mDef;
             }
+        }
+
+        public static string GetExtension(this AssemblyDef asmDef)
+        {
+            var md = (asmDef.ManifestModule as ModuleDefMD);
+            if (md == null)
+                return null;
+            
+            var name = md.StringsStream.ReadNoNull(md.TablesStream.ReadModuleRow(1).Name);
+            return Path.GetExtension(name);
         }
     }
 }
