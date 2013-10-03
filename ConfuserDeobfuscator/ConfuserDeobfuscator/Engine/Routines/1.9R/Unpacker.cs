@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using ConfuserDeobfuscator.Engine.Base;
+using ConfuserDeobfuscator.Engine.Routines.Base;
 using ConfuserDeobfuscator.Engine.Routines.Generic;
 using ConfuserDeobfuscator.Utils;
 using ConfuserDeobfuscator.Utils.Extensions;
@@ -64,7 +65,9 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
             mod.Kind = Ctx.Assembly.ManifestModule.Kind;
             mod.Assembly = Ctx.Assembly;
 
+            Ctx.IsUnpacked = true;
             Ctx.Assembly.Modules[0] = mod;
+            Ctx.OriginalMD = Ctx.Assembly.Modules[0] as ModuleDefMD;
             Ctx.UIProvider.WriteVerbose("Unpacked: {0}", 2, true, Ctx.Assembly.Name + Ctx.Assembly.GetExtension());
         }
 
@@ -137,13 +140,13 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
 
                         Ctx.UIProvider.WriteVerbose("Unpacked: {0}", 2, true, tmpAsm.Name + tmpAsm.GetExtension());
 
-                        var tester = new Unpacker();
-                        Ctx.Assembly = tmpAsm;
-                        tester.Initialize();
-                        if (tester.Detect())
-                            UnpackAllAssemblies(tmpAsm);
+                        //var tester = new Unpacker();
+                        //Ctx.Assembly = tmpAsm;
+                        //tester.Initialize();
+                        //if (tester.Detect())
+                        //    UnpackAllAssemblies(tmpAsm);
                     }
-                    catch (BadImageFormatException e)
+                    catch (BadImageFormatException)
                     {
 
                     }
@@ -177,6 +180,13 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
 
         public void ReloadFile()
         {
+            Ctx.Deobfuscator.FinalizeDeobfuscation();
+            var finalName = Path.GetDirectoryName(Ctx.Filename) + "\\" +
+                            Path.GetFileNameWithoutExtension(Ctx.Filename) + "_cleaned" +
+                            Path.GetExtension(Ctx.Filename);
+            Ctx.Filename = finalName;
+            Ctx.Assembly = AssemblyDef.Load(finalName);
+            Ctx.OriginalMD = Ctx.Assembly.ManifestModule as ModuleDefMD;
         }
     }
 }

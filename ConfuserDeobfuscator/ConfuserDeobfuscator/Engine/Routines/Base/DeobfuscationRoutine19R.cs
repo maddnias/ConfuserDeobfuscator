@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ConfuserDeobfuscator.Engine.Base;
 using ConfuserDeobfuscator.Utils;
 using ConfuserDeobfuscator.Utils.Extensions;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 
-namespace ConfuserDeobfuscator.Engine.Base
+namespace ConfuserDeobfuscator.Engine.Routines.Base
 {
     public abstract class DeobfuscationRoutine19R : IDeobfuscationRoutine, IConstantDemutator, IDelegateResolver
     {
@@ -30,7 +31,7 @@ namespace ConfuserDeobfuscator.Engine.Base
 
         public void CalculateMutations(MethodDef method)
         {
-            if (method == null)
+            if (method == null || method.Body == null)
                 return;
             var pattern = new List<Predicate<Instruction>>
                                   {

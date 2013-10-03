@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using ConfuserDeobfuscator.Engine.Base;
+using ConfuserDeobfuscator.Engine.Routines.Base;
 using ConfuserDeobfuscator.Utils;
 using ConfuserDeobfuscator.Utils.Extensions;
 using dnlib.DotNet;
@@ -298,15 +299,15 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
                     var str = d.Item1.Decrypt<string>(mdModifier, hashModifier);
 
                     body.SimplifyMacros(@ref.Item2.Parameters);
-                    body.SimplifyBranches();
-                    body.Instructions.Insert(
-                        body.Instructions.IndexOf(@ref.Item1),
-                        Instruction.Create(OpCodes.Ldstr, str));
-                    body.Instructions.RemoveAt(body.Instructions.IndexOf(@ref.Item1) - 2);
-                    body.Instructions.RemoveAt(body.Instructions.IndexOf(@ref.Item1) - 1);
-                    body.Instructions.Remove(@ref.Item1);
+                    body.SimplifyBranches(); 
+                    var idx = body.Instructions.IndexOf(@ref.Item1);
+                    body.Instructions.Insert(idx+1, Instruction.Create(OpCodes.Ldstr, str));
+                    body.Instructions.RemoveAt(--idx); //UInt64 param
+                    body.Instructions.RemoveAt(idx--); //UInt32 param
+                    body.Instructions.RemoveAt(idx);
                     body.OptimizeMacros();
                     body.OptimizeBranches();
+                    body.UpdateInstructionOffsets();
 
                     Ctx.UIProvider.WriteVerbose("Restored string \"{0}\"", 2, true, str);
                 }

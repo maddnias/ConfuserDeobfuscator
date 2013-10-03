@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using ConfuserDeobfuscator.Engine.Base;
+using ConfuserDeobfuscator.Engine.Routines.Base;
 using de4dot.code;
 using de4dot.code.AssemblyClient;
 using de4dot.code.deobfuscators;

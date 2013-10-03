@@ -20,6 +20,7 @@ namespace ConfuserDeobfuscator.Engine
         public static string Filename { get; set; }
         public static Dictionary<string, object> GlobalVariables { get; set; }
         public static OutputLevel LoggingLevel { get; set; }
+        public static bool IsUnpacked { get; set; }
 
         // For constantsdecryptor
         public static ModuleDefMD OriginalMD { get; set; }

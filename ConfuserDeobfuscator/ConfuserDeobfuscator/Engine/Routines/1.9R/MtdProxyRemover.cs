@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ConfuserDeobfuscator.Engine.Base;
+using ConfuserDeobfuscator.Engine.Routines.Base;
 using ConfuserDeobfuscator.Utils.Extensions;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
@@ -9,13 +10,13 @@ using Ctx = ConfuserDeobfuscator.Engine.DeobfuscatorContext;
 
 namespace ConfuserDeobfuscator.Engine.Routines._1._9
 {
-    public class CtorProxyRemover : DeobfuscationRoutine19R, IMetadataWorker
+    public class MtdProxyRemover : DeobfuscationRoutine19R, IMetadataWorker
     {
         public ModuleDefMD ModMD { get; set; }
 
         public override string Title
         {
-            get { return "Resolving constructor proxies"; }
+            get { return "Resolving method proxies"; }
         }
 
         public override bool Detect()
@@ -33,7 +34,7 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
                     continue;
                 // We have to distinguish method proxy generator from constructor proxy generator
                 var generator = del.GetStaticConstructor().Body.Instructions.FindInstruction(x => x.IsCall(), 0).Operand as MethodDef;
-                if(generator.Body.Instructions.FindInstruction(x => x.OpCode.Code == Code.Isinst && x.Operand.ToString().Contains("ConstructorInfo"), 0) != null)
+                if(generator.Body.Instructions.FindInstruction(x => x.OpCode.Code == Code.Isinst && x.Operand.ToString().Contains("MethodInfo"), 0) != null)
                     proxies.Add(del);
             }
 
@@ -56,10 +57,17 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
             var proxies = RoutineVariables["proxies"] as List<TypeDef>;
             var resolvedProxies = new List<Tuple<TypeDef, List<Tuple<IMemberRef, FieldDef>>>>();
 
+            if (proxies == null) return;
             var tester = proxies[0];
             var proxyGenerator =
                 tester.GetStaticConstructor().Body.Instructions.FindInstruction(x => x.IsCall(), 0).Operand as MethodDef;
+            CalculateMutations(proxyGenerator);
             var key = ReadKey(proxyGenerator);
+            var virtIdentifier =
+                proxyGenerator.Body.Instructions.FindInstruction(
+                    x => x.OpCode.Code == Code.Callvirt && x.Operand.ToString().EndsWith("get_Chars(System.Int32)"), 0)
+                              .Next(proxyGenerator.Body)
+                              .GetLdcI4Value();
 
             proxies.ForEach(p =>
                                 {
@@ -70,7 +78,7 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
             resolvedProxies.ForEach(p =>
                                         {
                                             foreach (var call in p.Item2)
-                                                RestoreProxyCall(Tuple.Create(p.Item1, call.Item1, call.Item2));
+                                                RestoreProxyCall(Tuple.Create(p.Item1, call.Item1, call.Item2), (char)virtIdentifier);
                                         });
             RoutineVariables.Add("generator", proxyGenerator);
         }
@@ -83,30 +91,44 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
             if (proxies != null)
                 foreach (var proxy in proxies)
                 {
-                    Ctx.UIProvider.WriteVerbose("Removed constructor proxy: {0}", 2, true, proxy.Name);
+                    Ctx.UIProvider.WriteVerbose("Removed method proxy: {0}", 2, true, proxy.Name);
                     Ctx.Assembly.ManifestModule.Types.Remove(proxy);
                 }
+
             if (generator != null)
             {
-                Ctx.UIProvider.WriteVerbose("Removed constructor proxy generator {0}::{1}", 2, true, generator.DeclaringType.Name,
+                Ctx.UIProvider.WriteVerbose("Removed method proxy generator {0}::{1}", 2, true, generator.DeclaringType.Name,
                                             generator.Name);
                 generator.DeclaringType.Methods.Remove(generator);
             }
         }
 
-        public override void RestoreProxyCall(Tuple<TypeDef, IMemberRef, FieldDef> resolvedProxy)
+        public override void RestoreProxyCall(Tuple<TypeDef, IMemberRef, FieldDef> resolvedProxy, char virtIdentifier)
         {
-            var destCall = resolvedProxy.Item1.Methods.First(x => x.IsStatic && !x.IsConstructor && x.HasBody);
+            var destCall =
+                resolvedProxy.Item1.Methods.First(
+                    x =>
+                    x.IsStatic && !x.IsConstructor && x.HasBody &&
+                    x.Body.Instructions.FindInstruction(
+                        y => y.OpCode.Code == Code.Ldsfld && y.Operand == resolvedProxy.Item3, 0) != null);
+
+            var isVirtual = resolvedProxy.Item3.Name.String[0] == virtIdentifier;
 
             foreach (var @ref in destCall.FindAllReferences())
             {
+                if (resolvedProxy.Item2 == null)
+                    continue;
                 Ctx.UIProvider.WriteVerbose("Restored proxy call [{0} -> {1}]", 2, true, destCall.Name, resolvedProxy.Item2.Name);
                 @ref.Item2.Body.SimplifyMacros(@ref.Item2.Parameters);
                 @ref.Item2.Body.SimplifyBranches();
-                @ref.Item2.Body.Instructions.Replace(@ref.Item1,
-                                                     Instruction.Create(OpCodes.Newobj, resolvedProxy.Item2 as IMethod));
-                @ref.Item2.Body.OptimizeBranches();
+                if ((resolvedProxy.Item2 as MemberRef) == null)
+                    return;
+                @ref.Item2.Body.Instructions.Insert(@ref.Item2.Body.Instructions.IndexOf(@ref.Item1),
+                      Instruction.Create((isVirtual ? OpCodes.Callvirt : OpCodes.Call), resolvedProxy.Item2 as MemberRef));
+                @ref.Item2.Body.Instructions.RemoveAt(@ref.Item2.Body.Instructions.IndexOf(@ref.Item1));
                 @ref.Item2.Body.OptimizeMacros();
+                @ref.Item2.Body.OptimizeBranches();
+                @ref.Item2.Body.UpdateInstructionOffsets();
             }
         }
     }

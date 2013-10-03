@@ -493,7 +493,6 @@ namespace ConfuserDeobfuscator.Utils
                     break;
                 case Code.Bne_Un_S:
                     break;
-                    break;
                 case Code.Bgt_Un_S:
                     break;
                 case Code.Ble_Un_S:

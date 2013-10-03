@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ConfuserDeobfuscator.Engine.Base;
+using ConfuserDeobfuscator.Engine.Routines.Base;
 using dnlib.DotNet;
 using Ctx = ConfuserDeobfuscator.Engine.DeobfuscatorContext;
 

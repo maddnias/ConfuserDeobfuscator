@@ -78,11 +78,10 @@ namespace ConfuserDeobfuscator.Deobfuscators
             tester.Initialize();
             if (tester.Detect())
             {
-                Ctx.Assembly = DeobfuscateAssembly(Ctx.Assembly);
-                Pipelines["unpacking"].Process();
+               // Ctx.Assembly = DeobfuscateAssembly(Ctx.Assembly);
+              //  Pipelines["unpacking"].Process();
             }
             Ctx.Assembly = DeobfuscateAssembly(Ctx.Assembly);
-
             FinalizeDeobfuscation();
         }
     }

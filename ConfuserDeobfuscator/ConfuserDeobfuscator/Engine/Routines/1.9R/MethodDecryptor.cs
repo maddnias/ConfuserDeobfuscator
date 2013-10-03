@@ -4,10 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using ConfuserDeobfuscator.Engine.Base;
+using ConfuserDeobfuscator.Engine.Routines.Base;
 using ConfuserDeobfuscator.Utils;
 using ConfuserDeobfuscator.Utils.Extensions;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
+using dnlib.DotNet.Writer;
 using dnlib.IO;
 using dnlib.PE;
 using Ctx = ConfuserDeobfuscator.Engine.DeobfuscatorContext;
@@ -18,7 +20,7 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
     {
         public ModuleDefMD ModMD { get; set; }
 
-        private MemoryStream _restoredAssembly { get; set; }
+        private MemoryStream RestoredAssembly { get; set; }
 
         public override string Title
         {
@@ -44,8 +46,8 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
 
         public override void Initialize()
         {
-            ModMD = ModuleDefMD.Load(Ctx.Filename);
-            _restoredAssembly = new MemoryStream();
+            ModMD = Ctx.OriginalMD;
+            RestoredAssembly = new MemoryStream();
         }
 
         public override void Process()
@@ -85,15 +87,15 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
                 {
                     try
                     {
-                        DeobfuscatorContext.Assembly.Write(_restoredAssembly);
+                        DeobfuscatorContext.Assembly.Write(RestoredAssembly);
                     }
                     catch
                     {
                         var buff2 = File.ReadAllBytes(DeobfuscatorContext.Filename);
-                        _restoredAssembly.Write(buff2, 0, buff2.Length);
+                        RestoredAssembly.Write(buff2, 0, buff2.Length);
 
                     }
-                    RestoreBodies(decStream, _restoredAssembly);
+                    RestoreBodies(decStream, RestoredAssembly);
                 }
             }
         }
@@ -283,7 +285,8 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
 
         public void ReloadFile()
         {
-            DeobfuscatorContext.Assembly = AssemblyDef.Load(_restoredAssembly);
+          //  File.WriteAllBytes(Ctx.Filename + "UN", RestoredAssembly.ToArray());
+            DeobfuscatorContext.Assembly = AssemblyDef.Load(RestoredAssembly);
         }
     }
 }
