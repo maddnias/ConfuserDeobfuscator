@@ -1,11 +1,11 @@
-﻿using dnlib.DotNet;
+﻿using System.Collections.Generic;
+using dnlib.DotNet;
 
 namespace ConfuserDeobfuscator.Engine.Base
 {
     public interface IConstantDemutator
     {
-        int[] DemutatedInts { get; set; }
-        long[] DemutatedLongs { get; set; }
+        Dictionary<string, DemutatedKeys> DemutatedKeys { get; set; }
         void CalculateMutations(MethodDef method);
 
     }

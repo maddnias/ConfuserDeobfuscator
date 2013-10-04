@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using dnlib.DotNet;
+using dnlib.DotNet.Emit;
 
 namespace ConfuserDeobfuscator.Engine.Base
 {
@@ -6,6 +9,7 @@ namespace ConfuserDeobfuscator.Engine.Base
     {
         //AssemblyDef Assembly { get; set; }
         //IUserInterfaceProvider UIProvider { get; set; }
+        List<Tuple<MethodDef, Instruction[]>> RemovedInstructions { get; set; }
         Dictionary<string, object> RoutineVariables { get; set; }
         string Title { get; }
 
@@ -13,5 +17,6 @@ namespace ConfuserDeobfuscator.Engine.Base
         void Initialize();
         void Process();
         void CleanUp();
+        void FinalizeCleanUp();
     }
 }

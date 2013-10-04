@@ -65,7 +65,7 @@ namespace ConfuserDeobfuscator.Engine.Routines.Generic
                 RenamerFlags = filesOptions.RenamerFlags,
                 KeepObfuscatorTypes = filesOptions.KeepObfuscatorTypes,
                 MetaDataFlags = filesOptions.MetaDataFlags,
-                PreserveTokens = true
+                PreserveTokens = true,
             };
 
             using (var asm = new MemoryStream())
@@ -77,7 +77,17 @@ namespace ConfuserDeobfuscator.Engine.Routines.Generic
                 using (var ms = new MemoryStream())
                 {
                     new FilesDeobfuscator(filesOptions).doIt(ms, Rename);
+
+                    // Better way to preserve these options?
+                    var cor20Ver = DeobfuscatorContext.Assembly.ManifestModule.Cor20HeaderRuntimeVersion;
+                    var clrVer = DeobfuscatorContext.Assembly.ManifestModule.RuntimeVersion;
+                    var clrFlags = DeobfuscatorContext.Assembly.ManifestModule.Cor20HeaderFlags;
+
                     DeobfuscatorContext.Assembly = AssemblyDef.Load(ms);
+
+                    DeobfuscatorContext.Assembly.ManifestModule.Cor20HeaderRuntimeVersion = cor20Ver;
+                    DeobfuscatorContext.Assembly.ManifestModule.RuntimeVersion = clrVer;
+                    DeobfuscatorContext.Assembly.ManifestModule.Cor20HeaderFlags = clrFlags;
                 }
             }
         }

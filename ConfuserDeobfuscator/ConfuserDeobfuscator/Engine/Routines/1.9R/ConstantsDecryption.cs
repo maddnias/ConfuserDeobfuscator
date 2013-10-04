@@ -300,14 +300,24 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
 
                     body.SimplifyMacros(@ref.Item2.Parameters);
                     body.SimplifyBranches(); 
-                    var idx = body.Instructions.IndexOf(@ref.Item1);
-                    body.Instructions.Insert(idx+1, Instruction.Create(OpCodes.Ldstr, str));
-                    body.Instructions.RemoveAt(--idx); //UInt64 param
-                    body.Instructions.RemoveAt(idx--); //UInt32 param
-                    body.Instructions.RemoveAt(idx);
+
+                    var removedInstructions = new[]
+                    {
+                        @ref.Item1.Previous(body),
+                        @ref.Item1.Previous(body).Previous(body),
+                        @ref.Item1
+                    };
+
+                    body.Instructions.Replace(@ref.Item1, Instruction.Create(OpCodes.Ldstr, str));
+
+                    foreach (var instr in removedInstructions)
+                        body.Instructions.Remove(instr);
+
                     body.OptimizeMacros();
                     body.OptimizeBranches();
                     body.UpdateInstructionOffsets();
+
+                    RemovedInstructions.Add(Tuple.Create(@ref.Item2, removedInstructions));
 
                     Ctx.UIProvider.WriteVerbose("Restored string \"{0}\"", 2, true, str);
                 }

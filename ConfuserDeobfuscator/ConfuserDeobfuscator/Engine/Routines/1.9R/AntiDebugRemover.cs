@@ -64,6 +64,7 @@ namespace ConfuserDeobfuscator.Engine
             {
                 Ctx.UIProvider.WriteVerbose("Removed bad call from {0}::{1}", 2, true, badCall.Item2.DeclaringType.Name,
                                             badCall.Item2.Name);
+                RemovedInstructions.Add(Tuple.Create(badCall.Item2, new[] {badCall.Item1}));
                 badCall.Item2.Body.Instructions.Remove(badCall.Item1);
             }
 

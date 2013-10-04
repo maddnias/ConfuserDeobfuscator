@@ -23,6 +23,7 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
         {
             RoutineVariables.Add("native", false); // I'll have to look into the native proxies later
             var proxies = new List<TypeDef>();
+           
 
             foreach (var del in Ctx.Assembly.ManifestModule.Types.Where(t => t.BaseType != null))
             {
@@ -123,9 +124,14 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
                 @ref.Item2.Body.SimplifyBranches();
                 if ((resolvedProxy.Item2 as MemberRef) == null)
                     return;
-                @ref.Item2.Body.Instructions.Insert(@ref.Item2.Body.Instructions.IndexOf(@ref.Item1),
+
+                RemovedInstructions.Add(Tuple.Create(@ref.Item2, new[]
+                {
+                    @ref.Item1
+                }));
+                @ref.Item2.Body.Instructions.Replace(@ref.Item1,
                       Instruction.Create((isVirtual ? OpCodes.Callvirt : OpCodes.Call), resolvedProxy.Item2 as MemberRef));
-                @ref.Item2.Body.Instructions.RemoveAt(@ref.Item2.Body.Instructions.IndexOf(@ref.Item1));
+
                 @ref.Item2.Body.OptimizeMacros();
                 @ref.Item2.Body.OptimizeBranches();
                 @ref.Item2.Body.UpdateInstructionOffsets();

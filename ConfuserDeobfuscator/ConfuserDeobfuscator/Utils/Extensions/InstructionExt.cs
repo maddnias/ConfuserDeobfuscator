@@ -211,5 +211,13 @@ namespace ConfuserDeobfuscator.Utils.Extensions
             return count;
         }
 
+        public static IEnumerable<Instruction> FindAllReferences(this Instruction instr, CilBody body)
+        {
+            foreach (var @ref in body.Instructions.Where(x => (x.IsConditionalBranch() || x.IsBr())))
+            {
+                if ((@ref.Operand as Instruction) == instr)
+                    yield return @ref;
+            }
+        }
     }
 }

@@ -97,6 +97,7 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
 
             if (badCall != null)
             {
+                RemovedInstructions.Add(Tuple.Create(badCall.Item2, badCall.Item1));
                 foreach (var instr in badCall.Item1)
                     badCall.Item2.Body.Instructions.Remove(instr);
             }

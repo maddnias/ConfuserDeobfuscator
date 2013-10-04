@@ -124,10 +124,14 @@ namespace ConfuserDeobfuscator.Engine
 
                 if (step.Detect())
                 {
-                    DeobfuscatorContext.UIProvider.Write(step.Title, 2);
+                    if(DeobfuscatorContext.LoggingLevel == DeobfuscatorContext.OutputLevel.Verbose)
+                        DeobfuscatorContext.UIProvider.Write("\n-----------------------\n" + step.Title);
+                    else
+                        DeobfuscatorContext.UIProvider.Write(step.Title);
                     step.Process();
                     DeobfuscatorContext.UIProvider.WriteVerbose("\nCleaning up");
                     step.CleanUp();
+                    step.FinalizeCleanUp();
                     if (step is IFileRewriter)
                         (step as IFileRewriter).ReloadFile();
                 }

@@ -104,6 +104,10 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
                 Ctx.UIProvider.WriteVerbose("Restored proxy call [{0} -> {1}]", 2, true, destCall.Name, resolvedProxy.Item2.Name);
                 @ref.Item2.Body.SimplifyMacros(@ref.Item2.Parameters);
                 @ref.Item2.Body.SimplifyBranches();
+                RemovedInstructions.Add(Tuple.Create(@ref.Item2, new[]
+                {
+                    @ref.Item1
+                }));
                 @ref.Item2.Body.Instructions.Replace(@ref.Item1,
                                                      Instruction.Create(OpCodes.Newobj, resolvedProxy.Item2 as IMethod));
                 @ref.Item2.Body.OptimizeBranches();

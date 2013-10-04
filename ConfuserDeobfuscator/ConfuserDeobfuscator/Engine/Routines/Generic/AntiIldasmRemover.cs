@@ -27,7 +27,7 @@ namespace ConfuserDeobfuscator.Engine.Routines.Generic
 
             if (RoutineVariables.Count == 1)
             {
-                Ctx.UIProvider.Write("No anti-ildasm?");
+                Ctx.UIProvider.WriteVerbose("No anti-ildasm?");
                 return false;
             }
 
