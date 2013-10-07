@@ -25,6 +25,22 @@ namespace ConfuserDeobfuscator.Utils
             }
         }
 
+        public static TypeDef GetRootType(this AssemblyDef asmDef)
+        {
+            var mod = (asmDef.ManifestModule as ModuleDefMD);
+            var rootTypeName = mod.StringsStream.Read(mod.TablesStream.ReadTypeDefRow(1).Name).String;
+
+            if (rootTypeName == null)
+                throw new Exception("Failed to read root type name from #Strings stream");
+
+            var rootType = asmDef.ManifestModule.Types.FirstOrDefault(t => t.Name == rootTypeName);
+
+            if (rootType == null)
+                throw new Exception("Could not find root type");
+
+            return rootType;
+        }
+
         public static string GetExtension(this AssemblyDef asmDef)
         {
             var md = (asmDef.ManifestModule as ModuleDefMD);

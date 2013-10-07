@@ -3,13 +3,13 @@ using System.IO;
 using ConfuserDeobfuscator.Deobfuscators.Base;
 using ConfuserDeobfuscator.Engine;
 using ConfuserDeobfuscator.Engine.Routines.Generic;
-using ConfuserDeobfuscator.Engine.Routines._1._9;
+using ConfuserDeobfuscator.Engine.Routines;
 using dnlib.DotNet;
 using Ctx = ConfuserDeobfuscator.Engine.DeobfuscatorContext;
 
 namespace ConfuserDeobfuscator.Deobfuscators
 {
-    public class Deobfuscator19R : DeobfuscatorBase
+    public class Deobfuscator19L : DeobfuscatorBase
     {
         public override Dictionary<string, Pipeline> Pipelines { get; set; }
 
@@ -23,24 +23,24 @@ namespace ConfuserDeobfuscator.Deobfuscators
             };
 
             var unpackingPipeline = Pipelines["unpacking"];
-            unpackingPipeline.AppendStep(new Unpacker());
+            unpackingPipeline.AppendStep(new Engine.Routines._1._9.Unpacker());
 
             var preRoutinePipeline = Pipelines["preRoutines"];
-            preRoutinePipeline.AppendStep(new InvalidMetadataRemover());
+            preRoutinePipeline.AppendStep(new Engine.Routines._1._9.InvalidMetadataRemover());
             preRoutinePipeline.AppendStep(new MethodCleaner(false));
-            preRoutinePipeline.AppendStep(new MethodDecryptor());
+            preRoutinePipeline.AppendStep(new Engine.Routines._1._9.MethodDecryptor());
 
             var routinePipeline = Pipelines["routines"];
             routinePipeline.AppendStep(new MethodCleaner(true));
-            routinePipeline.AppendStep(new AntiTamperRemover());
-            routinePipeline.AppendStep(new InvalidMetadataRemover());
-            routinePipeline.AppendStep(new MtdProxyRemover());
-            routinePipeline.AppendStep(new CtorProxyRemover());
+            routinePipeline.AppendStep(new Engine.Routines._1._9.InvalidMetadataRemover());
+            routinePipeline.AppendStep(new Engine.Routines._1._9.MtdProxyRemover());
+            routinePipeline.AppendStep(new Engine.Routines._1._9.CtorProxyRemover());
             routinePipeline.AppendStep(new AntiDebugRemover());
-            routinePipeline.AppendStep(new AntiDumpRemover());
-            routinePipeline.AppendStep(new ResourceDecryptor());
-            routinePipeline.AppendStep(new ConstantsDecryption());
+            routinePipeline.AppendStep(new Engine.Routines._1._9.AntiDumpRemover());
+            routinePipeline.AppendStep(new Engine.Routines._1._9L.ResourceDecryptor());
+            routinePipeline.AppendStep(new Engine.Routines._1._9L.ConstantsDecryption());
             routinePipeline.AppendStep(new AntiIldasmRemover());
+            routinePipeline.AppendStep(new Engine.Routines._1._9.AntiTamperRemover());
             routinePipeline.AppendStep(new WatermarkRemover());
         }
 

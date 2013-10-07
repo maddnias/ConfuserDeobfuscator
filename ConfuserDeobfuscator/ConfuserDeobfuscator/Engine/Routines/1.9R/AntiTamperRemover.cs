@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using ConfuserDeobfuscator.Engine.Base;
 using ConfuserDeobfuscator.Engine.Routines.Base;
 using ConfuserDeobfuscator.Utils;
@@ -18,6 +19,9 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
         public override bool Detect()
         {
             var antiTamper = Ctx.Assembly.FindMethod(IsAntiTamper);
+            var cctor = Ctx.Assembly.GetRootType().GetStaticConstructor();
+
+            RoutineVariables.Add("cctor", cctor);
             RoutineVariables.Add("antiTamper", antiTamper);
             var decryptor = Ctx.Assembly.FindMethod(IsDecryptor);
 
@@ -51,6 +55,8 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
 
             Ctx.UIProvider.WriteVerbose("Removed call to anti-tamper from {0}::{1}", 2, true, refs[0].Item2.DeclaringType.Name,
                                         ".cctor");
+
+            RemovedInstructions.Add(Tuple.Create(refs[0].Item2, new[] {refs[0].Item1}));
             refs[0].Item2.Body.Instructions.Remove(refs[0].Item1);
 
             Ctx.UIProvider.WriteVerbose("Removed bad type: {0}", 2, true, antiTamper.DeclaringType.Name);
@@ -68,13 +74,26 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
             if (mDef.Body.Variables.Count != 9 && mDef.Body.Variables.Count != 10)
                 return false;
 
-            if (mDef.FindAllReferences().Count() != 1)
+            var refs = mDef.FindAllReferences();
+
+            if (refs.Count() != 1)
                 return false;
 
-            if (mDef.FindAllReferences().ToList()[0].Item2 != RoutineVariables["antiTamper"])
-                return false;
+            var flag = false;
 
-            return true;
+            foreach (var instr in (RoutineVariables["cctor"] as MethodDef).Body.Instructions.Where(x => x.IsCall()))
+            {
+                if ((instr.Operand as MethodDef) == refs.ToList()[0].Item2)
+                {
+                    flag = true;
+                    break;
+                }
+            }
+
+            return flag;
+
+           // if (mDef.FindAllReferences().ToList()[0].Item2 != RoutineVariables["antiTamper"])
+           //     return false;
         }
 
         public static bool IsAntiTamper(MethodDef mDef)

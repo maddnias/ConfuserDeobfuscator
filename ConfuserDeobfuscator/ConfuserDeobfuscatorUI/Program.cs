@@ -8,12 +8,19 @@ using ConfuserDeobfuscator.Deobfuscators;
 
 namespace ConfuserDeobfuscatorUI
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            var d = new Deobfuscator19R();
-            d.ProcessFile(args[0]);
+            if (args.Length != 0)
+            {
+                var d = DeobfuscatorFactory.CreateDeobfuscator(args[0]);
+                d.ProcessFile(args[0]);
+            }
+            else
+            {
+                Console.WriteLine("No file Specified! \r\nPress any key to Exit");
+            }
 
             Console.ReadLine();
         }

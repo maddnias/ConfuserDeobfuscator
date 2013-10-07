@@ -65,7 +65,7 @@ namespace ConfuserDeobfuscator.Engine.Routines.Generic
                 RenamerFlags = filesOptions.RenamerFlags,
                 KeepObfuscatorTypes = filesOptions.KeepObfuscatorTypes,
                 MetaDataFlags = filesOptions.MetaDataFlags,
-                PreserveTokens = true,
+                PreserveTokens = true
             };
 
             using (var asm = new MemoryStream())

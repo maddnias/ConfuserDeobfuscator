@@ -286,7 +286,7 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
 
         public void ReloadFile()
         {
-            //File.WriteAllBytes(Ctx.Filename + "UN", RestoredAssembly.ToArray());
+           // File.WriteAllBytes(Ctx.Filename + "UN", RestoredAssembly.ToArray());
             DeobfuscatorContext.Assembly = AssemblyDef.Load(RestoredAssembly);
         }
     }

@@ -124,7 +124,7 @@ namespace ConfuserDeobfuscator.Engine
 
                 if (step.Detect())
                 {
-                    if(DeobfuscatorContext.LoggingLevel == DeobfuscatorContext.OutputLevel.Verbose)
+                    if (DeobfuscatorContext.LoggingLevel == DeobfuscatorContext.OutputLevel.Verbose)
                         DeobfuscatorContext.UIProvider.Write("\n-----------------------\n" + step.Title);
                     else
                         DeobfuscatorContext.UIProvider.Write(step.Title);

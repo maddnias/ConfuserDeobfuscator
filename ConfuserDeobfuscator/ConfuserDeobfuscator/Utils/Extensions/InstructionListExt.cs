@@ -30,6 +30,8 @@ namespace ConfuserDeobfuscator.Utils.Extensions
                     if (x++ == index)
                         if (instructions[i].IsLdcI4())
                             return (T)Convert.ChangeType(instructions[i].GetLdcI4(), typeof(T));
+                        else if (instructions[i].OpCode == OpCodes.Ldc_I8)
+                            return (T) Convert.ChangeType(instructions[i].Operand, typeof (T));
                         else
                             return (T) instructions[i].Operand;
 

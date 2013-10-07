@@ -41,9 +41,13 @@
   <ItemGroup>
     <Compile Include="ConsoleProvider.cs" />
     <Compile Include="Deobfuscators\Base\DeobfuscatorBase.cs" />
+    <Compile Include="Deobfuscators\Deobfuscator19L.cs" />
     <Compile Include="Deobfuscators\Deobfuscator18.cs" />
     <Compile Include="Deobfuscators\Deobfuscator19R.cs" />
+    <Compile Include="Deobfuscators\DeobfuscatorFactory.cs" />
     <Compile Include="Engine\Base\DemutatedKeys.cs" />
+    <Compile Include="Engine\Routines\1.9L\ConstantsDecryptor.cs" />
+    <Compile Include="Engine\Routines\1.9L\ResourceDecryptor.cs" />
     <Compile Include="Engine\Routines\Base\DeobfuscationRoutine18.cs" />
     <Compile Include="Engine\Base\IConstantDemutator.cs" />
     <Compile Include="Engine\Base\IDelegateResolver.cs" />
