@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ConfuserDeobfuscator.Deobfuscators.Base;
 using ConfuserDeobfuscator.Utils;
@@ -14,27 +15,47 @@ namespace ConfuserDeobfuscator.Deobfuscators
         public static DeobfuscatorBase CreateDeobfuscator(string assembly)
         {
             var asmDef = AssemblyDef.Load(assembly);
-            var confuserAttrib =
-                asmDef.ManifestModule.CustomAttributes.FirstOrDefault(a => a.AttributeType.Name == "ConfusedByAttribute");
+            string signature = FetchBlobSignature(asmDef.ManifestModule as ModuleDefMD) ??
+                               FetchAttributeSignature(asmDef.ManifestModule);
 
-            if (confuserAttrib == null)
-                throw new Exception("Assembly does not contain a confuser signature");
+            if (signature == null)
+                throw new Exception("Failed to locate a valid confuser signature in the assembly");
 
-            switch (confuserAttrib.ConstructorArguments[0].Value.ToString())
+            switch (signature)
             {
                 case "Confuser v1.9.0.0":
-                    return FetchSubversion(asmDef);
+                    return FetchSubversion1_9(asmDef);
 
                 case "Confuser v1.8.0.0":
                     throw new Exception("This version is not supported yet");
 
                 default:
                     throw new Exception(string.Format("Unable to create a deobfuscator for version: {0}",
-                        confuserAttrib.ConstructorArguments[0].Value));
+                        signature));
             }
         }
 
-        private static DeobfuscatorBase FetchSubversion(AssemblyDef asmDef)
+        private static string FetchAttributeSignature(IHasCustomAttribute mod)
+        {
+            var confuserAttrib = mod.CustomAttributes.FirstOrDefault(a => a.AttributeType.Name == "ConfusedByAttribute");
+            if (confuserAttrib == null || !confuserAttrib.HasConstructorArguments)
+                return null;
+            return confuserAttrib.ConstructorArguments[0].Value.ToString();
+        }
+
+        private static string FetchBlobSignature(ModuleDefMD mod)
+        {
+            var blobStream = mod.BlobStream.ImageStream;
+            var rawBuff = new byte[blobStream.Length];
+            var exp = new Regex("Confuser v[0-9].[0-9].[0-9].[0-9]");
+
+            blobStream.Read(rawBuff, 0, rawBuff.Length);
+
+            var match = exp.Match(Encoding.UTF8.GetString(rawBuff));
+            return match.Success ? match.Groups[0].Value : null;
+        }
+
+        private static DeobfuscatorBase FetchSubversion1_9(AssemblyDef asmDef)
         {
             foreach (var type in asmDef.ManifestModule.Types)
             {

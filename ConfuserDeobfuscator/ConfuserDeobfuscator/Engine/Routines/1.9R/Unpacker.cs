@@ -55,7 +55,7 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
             var mainRes = Ctx.Assembly.ManifestModule.Resources.FirstOrDefault(x => x.IsPrivate);
             if (mainRes == null)
                 return;
-            var decryptor = Ctx.Assembly.ManifestModule.EntryPoint.DeclaringType.FindMethod("Decrypt");
+            var decryptor = Ctx.Assembly.ManifestModule.EntryPoint.DeclaringType.FindMethod("smethod_3");
 
             var key = RetrieveDecryptionKey(decryptor);
             var asmDat = Decrypt((mainRes as EmbeddedResource).GetResourceData(), key);
@@ -156,7 +156,7 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
 
         bool StaticDecryptAssembly(AssemblyDef asmDef, byte[] asm, out byte[] decData)
         {
-            var decryptor = asmDef.ManifestModule.EntryPoint.DeclaringType.FindMethod("Decrypt");
+            var decryptor = asmDef.ManifestModule.EntryPoint.DeclaringType.FindMethod("smethod_3");
             var key = RetrieveDecryptionKey(decryptor);
             decData = new byte[asm.Length];
 

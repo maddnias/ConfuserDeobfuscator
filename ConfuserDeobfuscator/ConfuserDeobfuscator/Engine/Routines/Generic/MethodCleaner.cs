@@ -7,6 +7,7 @@ using de4dot.code.AssemblyClient;
 using de4dot.code.deobfuscators;
 using de4dot.cui;
 using dnlib.DotNet;
+using dnlib.DotNet.MD;
 using dnlib.DotNet.Writer;
 
 namespace ConfuserDeobfuscator.Engine.Routines.Generic
@@ -70,7 +71,7 @@ namespace ConfuserDeobfuscator.Engine.Routines.Generic
 
             using (var asm = new MemoryStream())
             {
-                DeobfuscatorContext.Assembly.Write(asm, new ModuleWriterOptions() { Logger = DummyLogger.NoThrowInstance});
+                DeobfuscatorContext.Assembly.Write(asm, new ModuleWriterOptions() { Logger = DummyLogger.NoThrowInstance });
                 files.Add(new ObfuscatedFile(newFileOptions, filesOptions.ModuleContext,
                                              filesOptions.AssemblyClientFactory, asm));
 

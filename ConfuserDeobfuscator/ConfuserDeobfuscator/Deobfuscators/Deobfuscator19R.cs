@@ -74,6 +74,13 @@ namespace ConfuserDeobfuscator.Deobfuscators
                                                  0, true, Path.GetFileNameWithoutExtension(filename));
 
             InitializePipelines();
+            //var tester = new Unpacker();
+            //tester.Initialize();
+            //if (tester.Detect())
+            //{
+            //    Ctx.Assembly = DeobfuscateAssembly(Ctx.Assembly);
+            //    Pipelines["unpacking"].Process();
+            //}
             Ctx.Assembly = DeobfuscateAssembly(Ctx.Assembly);
             FinalizeDeobfuscation();
         }

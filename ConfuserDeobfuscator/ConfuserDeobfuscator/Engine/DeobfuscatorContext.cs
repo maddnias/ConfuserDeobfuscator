@@ -22,7 +22,7 @@ namespace ConfuserDeobfuscator.Engine
         public static OutputLevel LoggingLevel { get; set; }
         public static bool IsUnpacked { get; set; }
 
-        // For constantsdecryptor
+        public static byte[] ConfuserPESection { get; set; }
         public static ModuleDefMD OriginalMD { get; set; }
     }
 }

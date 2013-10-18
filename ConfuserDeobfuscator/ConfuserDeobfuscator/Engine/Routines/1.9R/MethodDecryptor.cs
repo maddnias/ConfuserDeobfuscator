@@ -62,7 +62,7 @@ namespace ConfuserDeobfuscator.Engine.Routines._1._9
             ReadKeys(antiTamper.Body, decryptor.Body);
 
             var badSection = ModMD.MetaData.PEImage.ImageSectionHeaders.Last();
-            var stream = ModMD.MetaData.PEImage.CreateStream((FileOffset) badSection.PointerToRawData,
+            var stream = ModMD.MetaData.PEImage.CreateStream((FileOffset)badSection.PointerToRawData,
                                                              badSection.SizeOfRawData);
 
             byte[] iv, dat;
