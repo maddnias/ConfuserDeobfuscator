@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="ConsoleProvider.cs" />
     <Compile Include="Deobfuscators\Base\DeobfuscatorBase.cs" />
+    <Compile Include="Deobfuscators\DeobfuscatorEx.cs" />
     <Compile Include="Deobfuscators\Deobfuscator19L.cs" />
     <Compile Include="Deobfuscators\Deobfuscator18.cs" />
     <Compile Include="Deobfuscators\Deobfuscator19R.cs" />
@@ -48,6 +49,7 @@
     <Compile Include="Engine\Base\DemutatedKeys.cs" />
     <Compile Include="Engine\Routines\1.9L\ConstantsDecryptor.cs" />
     <Compile Include="Engine\Routines\1.9L\ResourceDecryptor.cs" />
+    <Compile Include="Engine\Routines\Base\DeobfuscationRoutineEx.cs" />
     <Compile Include="Engine\Routines\Base\DeobfuscationRoutine18.cs" />
     <Compile Include="Engine\Base\IConstantDemutator.cs" />
     <Compile Include="Engine\Base\IDelegateResolver.cs" />
@@ -68,9 +70,24 @@
     <Compile Include="Engine\Routines\1.9R\MtdProxyRemover.cs" />
     <Compile Include="Engine\Routines\1.9R\ResourceDecryptor.cs" />
     <Compile Include="Engine\Routines\1.9R\Unpacker.cs" />
+    <Compile Include="Engine\Routines\Ex\MildReferenceProxyInliner.cs" />
+    <Compile Include="Engine\Routines\Ex\NativeSwitchEvaluator.cs" />
+    <Compile Include="Engine\Routines\Ex\StrongReferenceProxyInliner.cs" />
+    <Compile Include="Engine\Routines\Ex\x86\X86Method.cs" />
+    <Compile Include="Engine\Routines\Ex\x86\Instructions\X86POP.cs" />
+    <Compile Include="Engine\Routines\Ex\x86\Instructions\X86XOR.cs" />
+    <Compile Include="Engine\Routines\Ex\x86\Instructions\X86NOT.cs" />
+    <Compile Include="Engine\Routines\Ex\x86\Instructions\X86NEG.cs" />
+    <Compile Include="Engine\Routines\Ex\x86\Instructions\X86DIV.cs" />
+    <Compile Include="Engine\Routines\Ex\x86\Instructions\X86IMUL.cs" />
+    <Compile Include="Engine\Routines\Ex\x86\Instructions\X86SUB.cs" />
+    <Compile Include="Engine\Routines\Ex\x86\Instructions\X86ADD.cs" />
+    <Compile Include="Engine\Routines\Ex\x86\Instructions\X86MOV.cs" />
+    <Compile Include="Engine\Routines\Ex\x86\X86Instruction.cs" />
     <Compile Include="Engine\Routines\Generic\AntiIldasmRemover.cs" />
     <Compile Include="Engine\Routines\Generic\WatermarkRemover.cs" />
     <Compile Include="Engine\Routines\Generic\MethodCleaner.cs" />
+    <Compile Include="Engine\UnmanagedBuffer.cs" />
     <Compile Include="IUserInterfaceProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\Compression\Common\CRC.cs" />
@@ -99,6 +116,14 @@
     <Compile Include="Utils\ILEmulator.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Bea\Bea.csproj">
+      <Project>{5dbc213c-a37d-459b-8f43-62dea503b682}</Project>
+      <Name>Bea</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\de4dot\blocks\blocks.csproj">
+      <Project>{045B96F2-AF80-4C4C-8D27-E38635AC705E}</Project>
+      <Name>blocks</Name>
+    </ProjectReference>
     <ProjectReference Include="..\de4dot\de4dot.code\de4dot.code.csproj">
       <Project>{4d10b9eb-3bf1-4d61-a389-cb019e8c9622}</Project>
       <Name>de4dot.code</Name>
@@ -116,6 +141,7 @@
       <Name>dnlib</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

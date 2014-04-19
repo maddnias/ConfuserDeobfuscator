@@ -23,7 +23,7 @@ namespace ConfuserDeobfuscator.Deobfuscators.Base
                             Path.GetFileNameWithoutExtension(filename) + "_cleaned" +
                             Path.GetExtension(filename);
 
-            Ctx.Assembly.Write(finalName);//, new ModuleWriterOptions { Logger = DummyLogger.NoThrowInstance});
+            Ctx.Assembly.Write(finalName, new ModuleWriterOptions { Logger = DummyLogger.NoThrowInstance});
             Ctx.UIProvider.Write("_______________________________________\n\nSaved deobfuscated assembly at {0}", 0, true, finalName);
         }
     }

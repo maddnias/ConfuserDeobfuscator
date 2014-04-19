@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using dnlib.DotNet;
 
-namespace ConfuserDeobfuscator.Utils
+namespace ConfuserDeobfuscator.Utils.Extensions
 {
     public static class AssemblyDefExt
     {

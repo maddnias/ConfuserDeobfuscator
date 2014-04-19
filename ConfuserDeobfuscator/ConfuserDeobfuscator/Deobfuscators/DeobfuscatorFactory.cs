@@ -14,6 +14,8 @@ namespace ConfuserDeobfuscator.Deobfuscators
     {
         public static DeobfuscatorBase CreateDeobfuscator(string assembly)
         {
+            return Activator.CreateInstance<DeobfuscatorEx>();
+
             var asmDef = AssemblyDef.Load(assembly);
             string signature = FetchBlobSignature(asmDef.ManifestModule as ModuleDefMD) ??
                                FetchAttributeSignature(asmDef.ManifestModule);

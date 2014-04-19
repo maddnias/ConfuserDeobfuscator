@@ -67,7 +67,7 @@ namespace ConfuserDeobfuscator.Deobfuscators
             Ctx.Filename = filename;
             Ctx.Assembly = AssemblyDef.Load(filename);
             Ctx.UIProvider = new ConsoleProvider();
-            Ctx.LoggingLevel = Ctx.OutputLevel.Normal;
+            Ctx.LoggingLevel = Ctx.OutputLevel.Verbose;
             Ctx.OriginalMD = (Ctx.Assembly.ManifestModule as ModuleDefMD);
 
             Ctx.UIProvider.Write("Initializing deobfuscation of {0}\n_______________________________________\n",

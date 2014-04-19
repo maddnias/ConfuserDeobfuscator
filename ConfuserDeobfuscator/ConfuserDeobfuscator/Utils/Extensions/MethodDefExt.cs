@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using ConfuserDeobfuscator.Engine;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
+using dnlib.PE;
 
 namespace ConfuserDeobfuscator.Utils.Extensions
 {
@@ -36,6 +38,19 @@ namespace ConfuserDeobfuscator.Utils.Extensions
                         }
                 }
             }
+        }
+
+        public static byte[] ReadBodyFromRva(this MethodDef method)
+        {
+            var stream = DeobfuscatorContext.OriginalMD.MetaData.PEImage.CreateFullStream();
+            var offset = DeobfuscatorContext.OriginalMD.MetaData.PEImage.ToFileOffset(method.RVA);
+            var nextMethod = DeobfuscatorContext.OriginalMD.TablesStream.ReadMethodRow(method.Rid + 1);
+            var size = DeobfuscatorContext.OriginalMD.MetaData.PEImage.ToFileOffset((RVA)nextMethod.RVA) - offset;
+            var buff = new byte[(size-20 < 0 ? 50 : size-20)];
+
+            stream.Position = (long) offset + 20;
+            stream.Read(buff, 0, buff.Length);
+            return buff;
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ConfuserDeobfuscator.Engine.Routines.Base;
 using ConfuserDeobfuscator.Utils;
+using ConfuserDeobfuscator.Utils.Extensions;
 using dnlib.DotNet;
 using Ctx = ConfuserDeobfuscator.Engine.DeobfuscatorContext;
 namespace ConfuserDeobfuscator.Engine.Routines._1._8
