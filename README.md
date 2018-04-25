@@ -1,4 +1,4 @@
 ConfuserDeobfuscator
 ====================
 
-Deobfuscator for Confuser 1.9.0.0 release
+Tool to automatically deobfuscate assemblies obfuscated with Confuser versions 1.8 to 1.9 (release and latest build).
